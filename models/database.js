@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+//create video model
+require('../models/video');
 //create user model
 require('./user');
 

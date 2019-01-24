@@ -9,6 +9,10 @@
 </head>
 
 <body>
+  <%if(showNav){%>
+    <% include ../partials/user-nav.ejs %>
+  <%}%>
+
   <div class="container container-background">
     <form class="form-horizontal" enctype="multipart/form-data" method="POST" action="/update-user-info" onsubmit="return validateForm()">
       <div class="row justify-content-center">

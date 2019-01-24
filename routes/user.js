@@ -5,16 +5,16 @@ const userAuthMid = require('../middleware/user-auth');
 var fs = require('fs');
 var formidable = require('formidable');
 
-
+const Video = require('../models/video');
 const User = require('../models/user');
 
 //Get login page
-router.get('/login',userAuthMid.requiresUnLogin, function (req, res, next) {
+router.get('/login', userAuthMid.requiresUnLogin, function (req, res, next) {
   res.render('pages/login', { error: '', data: {} });
 });
 
 //Post login user
-router.post('/login',userAuthMid.requiresUnLogin, (req, res) => {
+router.post('/login', userAuthMid.requiresUnLogin, (req, res) => {
   const user = req.body;
   //validate input
   if (!user || !user.email || user.email == '' || !user.password || user.password == '') {
@@ -47,14 +47,14 @@ router.post('/login',userAuthMid.requiresUnLogin, (req, res) => {
 /**
  * Get register page
  */
-router.get('/register',userAuthMid.requiresUnLogin, (req, res) => {
+router.get('/register', userAuthMid.requiresUnLogin, (req, res) => {
   res.render('pages/register', { user: {}, error: {} });
 });
 
 /**
  * Create new user
  */
-router.post('/register',userAuthMid.requiresUnLogin, (req, res) => {
+router.post('/register', userAuthMid.requiresUnLogin, (req, res) => {
   const newUser = req.body;
   //Todo validate user info
 
@@ -88,7 +88,7 @@ router.post('/register',userAuthMid.requiresUnLogin, (req, res) => {
 });
 
 //Post Login with facebook user
-router.post('/login-facebook',userAuthMid.requiresUnLogin, (req, res) => {
+router.post('/login-facebook', userAuthMid.requiresUnLogin, (req, res) => {
   const user = req.body;
   //Validate user from facebook
   const api = 'https://graph.facebook.com/me?fields=id&access_token=' + user.access_token;
@@ -151,15 +151,16 @@ router.get('/logout', function (req, res, next) {
   }
 });
 
-router.get('/update-user-info',userAuthMid.requiresLogin, (req, res, next) => {
+router.get('/update-user-info', userAuthMid.requiresLogin, (req, res, next) => {
   const id = req.session.userId;
+  const showNav = req.session.hasInfo;
   // const id = '5c49b747fb70b007ffda9001';
   User.findOne({ _id: id }, (err, result) => {
     if (err) {
       res.redirect('/');
       return;
     }
-    res.render('pages/update-user-info', { user: result });
+    res.render('pages/update-user-info', { user: result, showNav });
 
   });
 });
@@ -220,4 +221,80 @@ router.post('/update-user-info', userAuthMid.requiresLogin, (req, res) => {
     }
   });
 });
+
+router.get('/add-video',userAuthMid.requiresFullInfoUser, (req, res) => {
+  res.render('pages/add-video', { error: '' });
+});
+
+router.post('/add-video', (req, res) => {
+  const data = req.body;
+  const userId = req.session.userId;
+  if (!data ||
+    !data.link || data.link == '' ||
+    !data.subject || data.subject == '') {
+    res.render('pages/add-video', { error: 'Inputs are invalid' });
+    return;
+  }
+  data.user_id = userId;
+  data.status = 'submitted';
+  data.timestamp = new Date().getTime();
+
+  Video.create(data, (err) => {
+    if (err) {
+      console.log('Create video error', err);
+      res.render('pages/add-video', { error: 'Something went wrong' });
+      return;
+    }
+    res.redirect('/');
+  });
+})
+
+/* GET home page. This require authen user*/
+router.get('/',userAuthMid.requiresFullInfoUser, function (req, res, next) {
+  const userId = req.session.userId;
+  Video.find({ user_id: userId }, (err, result) => {
+    if (err) {
+      res.render('pages/home', { videos: [] });
+      return;
+    }
+    result = result.map(item => {
+      item.thumbnail = getThumbnailImageOfVideo(item.link);
+      item.time = getTimeStringOf(item.timestamp);
+      return item;
+    });
+    res.render('pages/home', { videos: result });
+  });
+});
+
+function getThumbnailImageOfVideo(link) {
+  // console.log('Link',link);
+  const param = link.match(/v=[^&]*/g)[0];
+  // console.log('param',param);
+  const id = (param && param.length > 2) ? param.substring(2) : '';
+  console.log('video id', id);
+  const image = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+  return image;
+}
+
+function getTimeStringOf(time) {
+  if(!time){
+    return '';
+  }
+
+  var date = new Date(time);
+  // Hours part from the timestamp
+  var hours = '0' + date.getHours();
+  // Minutes part from the timestamp
+  var minutes = "0" + date.getMinutes();
+
+  var day = "0" + date.getDate();
+  var month = "0" + (date.getMonth() + 1);
+  var year = date.getFullYear();
+
+  // Will display time in 10:30:23 format
+  var formattedTime = day.substr(-2) + '/' + month.substr(-2) + '/' + year + ' ' +
+   hours.substr(-2) + ':' + minutes.substr(-2);
+  return formattedTime;
+}
+
 module.exports = router;
