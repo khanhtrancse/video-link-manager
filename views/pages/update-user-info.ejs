@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    Update user information
+  </title>
+  <% include ../partials/head.ejs %>
+</head>
+
+<body>
+  <div class="container">
+    <form class="form-horizontal" enctype="multipart/form-data" method="POST" action="/update-user-info">
+      <div class="row justify-content-center">
+        <h2 class="text-center">Update your information</h2>
+      </div>
+      <hr>
+      <!--Username-->
+      <div class="row mb-2">
+        <div class="col-md-3 field-label-responsive my-auto">
+          <div class="input-group-addon float-md-right"><i class="fas fa-user"></i> Username: </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group mb-0">
+            <input type="input" class="form-control" id="Name" value="<%=user.name%>" disabled>
+          </div>
+        </div>
+        <div class="col-md-3">
+        </div>
+      </div>
+
+      <!--Email-->
+      <div class="row mb-2">
+        <div class="col-md-3 field-label-responsive my-auto">
+          <div class="input-group-addon float-md-right"><i class="fas fa-user"></i> Username: </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group mb-0">
+            <input type="input" class="form-control" value="<%=user.email%>" disabled>
+          </div>
+        </div>
+        <div class="col-md-3">
+        </div>
+      </div>
+
+      <!--Image-->
+      <div class="row mb-2">
+        <div class="col-md-3 field-label-responsive my-auto">
+          <div class="input-group-addon float-md-right"><i class="fas fa-image"></i> Images </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group mb-0">
+            <input name="images" type="file" id="images" accept="image/gif, image/jpeg, image/png" multiple onchange="selectedFiles(this.files);" />
+          </div>
+        </div>
+        <div class="col-md-3">
+        </div>
+      </div>
+
+      <div class="row mb-2 px-0 mx-0 justify-content-center">
+        <div id="image-list" class="col-12 row mx-0 justify-content-center">
+        </div>
+        <div class="text-center text-secondary">- Click image to remove it</div>
+      </div>
+
+      <div class="row justify-content-center mb-5">
+        <button type="submit" class="btn btn-success mx-2"><i class="fa fa-user-plus"></i> Add</button>
+        <a href="/"><button type="button" class="btn btn-secondary mx-2"><i class="fas fa-eraser"></i> Skip</button></a>
+
+      </div>
+    </form>
+  </div>
+</body>
+
+<script>
+
+  var currentFiles = [];
+  var isRender = false;
+  function selectedFiles(files) {
+    for (let i = 0; i < files.length; i++) {
+      currentFiles.push(files[i]);
+    }
+    previewImage(currentFiles);
+  }
+
+  function previewImage(files) {
+    $("#image-list").empty();
+    console.log("Selected images", files);
+    if (!files || files.length <= 0) {
+      return;
+    }
+    isRender = true;
+    let i = 0;
+    const callback = () => {
+      i++;
+      if (i < files.length) {
+        showImage(files[i], callback);
+      } else {
+        isRender = false;
+      }
+    }
+    showImage(files[i], callback);
+  }
+
+  function showImage(file, callback) {
+    const img = document.createElement("img");
+    img.classList.add('img-fluid');
+    img.classList.add('img-thumbnail');
+    const a = document.createElement("a");
+    a.classList.add("d-block", "h-100", "person-image-thumbnail", "px-1", "py-1", "mx-1");
+    a.appendChild(img);
+    var div = document.createElement("div");
+    div.classList.add("col-lg-3", "col-md-4", "col-xs-6", "my-1");
+    div.appendChild(a);
+    div.onclick = () => {
+      removeImage(file.name);
+    }
+
+    var reader = new FileReader();
+    reader.onloadend = function () {
+      img.src = reader.result;
+      if (callback) {
+        callback();
+      }
+    }
+    reader.readAsDataURL(file);
+    $("#image-list").append(div);
+  }
+
+  function removeImage(name) {
+    console.log('Remove image', name, isRender);
+    if (isRender) {
+      return;
+    }
+
+    for (let i = 0; i < currentFiles.length; i++) {
+      if (currentFiles[i].name == name) {
+        console.log(typeof (currentFiles));
+        currentFiles.splice(i, 1);
+        break;
+      }
+    }
+
+    previewImage(currentFiles);
+  }
+</script>
+
+</html>

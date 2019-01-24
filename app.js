@@ -5,8 +5,11 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 var session = require('express-session')
 
+const database = require('./models/database');
+const config = require('./config');
+
 var indexRouter = require('./routes/index');
-var userAuthRouter = require('./routes/user-auth');
+var userAuthRouter = require('./routes/user');
 
 var app = express();
 
@@ -20,6 +23,15 @@ app.use(session({
   resave: true,
   saveUninitialized: true
 }))
+
+//Connect to database
+database.connectToDatabase(config.DATABASE_URI,(err)=>{
+  if(err){
+    console.log('Connect to database error');
+  } else{
+    console.log('Connect to database success');
+  }
+})
 
 app.use(logger('dev'));
 app.use(express.json());

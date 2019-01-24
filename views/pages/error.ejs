@@ -1,3 +1,30 @@
-<h1><%= message %></h1>
-<h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+<html>
+
+<head>
+    <% include ../partials/head.ejs%>
+    <title>Error</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="d-flex justify-content-center ">
+            <h1>
+                <%= message %>
+            </h1>
+        </div>
+        <div class="d-flex justify-content-center ">
+            <h2>
+                <%= error.status %>
+            </h2>
+        </div>
+        <div class="d-flex justify-content-center ">
+            <a href='/'>Go to Home</a>
+        </div>
+
+        <!-- <pre><%= error.stack %></pre> -->
+
+
+    </div>
+</body>
+
+</html>
