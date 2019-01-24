@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var md5 = require('md5');
+var request = require('request');
 
 const database = require('../models/database');
 const Code = require('../models/response-code');
@@ -23,18 +24,21 @@ router.post('/login', (req, res) => {
   body.password = md5(body.password);
 
   //start login
-  database.login(body.email, body.password, (err, success) => {
+  database.login(body.email, body.password, (err, user) => {
     let error;
     if (err) {
       error = 'Something went wrong.';
-    } else if (!success) {
+    } else if (!user) {
       error = 'Username/password are incorrect.';
     }
 
     if (error) {
       res.render('pages/login', { error, data: { email: body.email } });
     } else {
-      res.redirect('/home');
+      //login susccess
+      console.log('User',user);
+      req.session.userId = user._id;
+      res.redirect('/');
     }
   });
 });
@@ -64,5 +68,40 @@ router.post('/register', (req, res) => {
     }
   });
 });
+
+router.post('/login-facebook', (req, res) => {
+  const user = req.body;
+  //Validate user from facebook
+  const api = 'https://graph.facebook.com/me?fields=id&access_token=' + user.access_token;
+  request(api, function (error, response, body) {
+    try {
+      body = JSON.parse(body);
+    } catch (err) {
+      res.render('pages/error', { message: 'Something went wrong.', error: {} });
+      return;
+    }
+
+    if (response && response.statusCode == 200 && body && body.id == user.id) {
+      //Update database is neccessary
+      const data = { tp_id: user.id, email: user.email, username: user.username };
+      database.createOrUpdateUser(data, (err,user) => {
+        if (err) {
+          console.log('Update facebook user error', err);
+          res.render('pages/error', { message: 'Something went wrong.', error: {} });
+          return;
+        }
+        req.session.userId = user._id;
+        res.redirect('/');
+      });
+    } else {
+      res.render('pages/error', { message: 'Invalid user.', error: {} });
+    }
+  });
+});
+
+router.get('/logout',(req,res)=>{
+  req.session.userId = undefined;
+  res.redirect('/');
+})
 
 module.exports = router;

@@ -75,11 +75,33 @@ function createUser(user, cb) {
     }
 }
 
+function createOrUpdateUser(user,cb){
+      //Check connect to database
+      if (!isConnected) {
+        cb({ code: Code.DATABASE_ERROR });
+        return;
+    } 
+
+    User.updateOne({email: user.email},user,{upsert: true}, (err) => {
+        if (err) {
+            cb({ code: Code.DATABASE_ERROR });
+            return;
+        }
+        User.findOne({email: user.email},(err, user) => {
+            if (err || !user) {
+                cb({ code: Code.DATABASE_ERROR });
+                return;
+            }
+            cb(null,user);
+        });
+    });
+}
+
 /**
  * Login with email and password
  * @param {*} email 
  * @param {*} password 
- * @param {*} cb (err,success)=>{}
+ * @param {*} cb (err,user)=>{}
  */
 function login(email,password, cb){
     if (!isConnected) {
@@ -94,7 +116,7 @@ function login(email,password, cb){
         }
 
         if (res) {
-            cb(null, true);
+            cb(null, res);
         } else {
             cb(null, false);
         }
@@ -104,4 +126,5 @@ function login(email,password, cb){
 module.exports = {
     createUser,
     login,
+    createOrUpdateUser
 }

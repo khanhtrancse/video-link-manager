@@ -2,9 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const user = {
-    name: 'string',
+    username: 'string',
     email: 'string',
     password: 'string',
+    tp_id: 'string',
 }
 
 const UserSchema = new Schema(user);
