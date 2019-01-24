@@ -3,13 +3,39 @@
 
 <head>
   <title>
-    Login
+    Home
   </title>
   <% include ../partials/head.ejs %>
 </head>
 
 <body>
-  Home
+  <% include ../partials/user-nav.ejs %>
+
+  <div class="container">
+    <div class="row justify-content-center align-item-center card-container">
+      <a href="/add-video" class="card mx-5 my-3 home-item bg-info text-white">
+        <div class="row justify-content-center">
+          <img class="card-img-top home-item-icon mx-3 my-3" src="/images/add-video-icon.png" alt="View User">
+        </div>
+        <div class="card-body">
+          <h2>Add video</h2>
+          <p class="card-text">Add new video</p>
+        </div>
+      </a>
+
+      <a href="/view-video-list" class="card mx-5 my-3 home-item bg-info text-white">
+        <div class="row justify-content-center">
+          <img class="card-img-top home-item-icon mx-3 my-3" src="/images/list-video-icon.png" alt="View Department">
+        </div>
+        <div class="card-body">
+          <h2>List</h2>
+          <p class="card-text">View all videos</p>
+        </div>
+      </a>
+    </div>
+
+  </div>
+
 </body>
 
 </html>

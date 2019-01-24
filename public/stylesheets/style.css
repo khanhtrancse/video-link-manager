@@ -1,10 +1,23 @@
+body{
+  background-color: #E9EBEE;
+}
+
 .background{
   background-image: url('/images/bg_login.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   height: 100vh;
   font-family: 'Numans', sans-serif;
-  }
+}
+
+.container-background{
+  background-color: white;
+  min-height: 100vh;
+}
+
+.nav-background{
+  background-color: #19218d;
+}
 
   .card-signin {
     border: 0;
@@ -22,3 +35,17 @@
     background-color: #4267B1;
     color: white;
   }
+
+
+.home-item{
+  width: 25rem;
+}
+
+.home-item:hover{
+  text-decoration: none;
+}
+
+.home-item-icon{
+  width: 65%;
+  height: 16em;
+}

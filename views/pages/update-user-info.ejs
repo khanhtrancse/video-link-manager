@@ -9,8 +9,8 @@
 </head>
 
 <body>
-  <div class="container">
-    <form class="form-horizontal" enctype="multipart/form-data" method="POST" action="/update-user-info">
+  <div class="container container-background">
+    <form class="form-horizontal" enctype="multipart/form-data" method="POST" action="/update-user-info" onsubmit="return validateForm()">
       <div class="row justify-content-center">
         <h2 class="text-center">Update your information</h2>
       </div>
@@ -32,7 +32,7 @@
       <!--Email-->
       <div class="row mb-2">
         <div class="col-md-3 field-label-responsive my-auto">
-          <div class="input-group-addon float-md-right"><i class="fas fa-user"></i> Username: </div>
+          <div class="input-group-addon float-md-right"><i class="fas fa-envelope"></i> Email: </div>
         </div>
         <div class="col-md-6">
           <div class="form-group mb-0">
@@ -60,12 +60,18 @@
       <div class="row mb-2 px-0 mx-0 justify-content-center">
         <div id="image-list" class="col-12 row mx-0 justify-content-center">
         </div>
-        <div class="text-center text-secondary">- Click image to remove it</div>
+        <small id="images-error" class="text-center text-danger"></small>
+      </div>
+
+      <div class="row mb-2 px-0 mx-0 justify-content-center">
+        <div id="image-list" class="col-12 row mx-0 justify-content-center">
+        </div>
+        <div id="remove-image-hint" class="text-center text-secondary"></div>
       </div>
 
       <div class="row justify-content-center mb-5">
-        <button type="submit" class="btn btn-success mx-2"><i class="fa fa-user-plus"></i> Add</button>
-        <a href="/"><button type="button" class="btn btn-secondary mx-2"><i class="fas fa-eraser"></i> Skip</button></a>
+        <button type="submit" class="btn btn-success mx-2"><i class="fa fa-user-plus"></i> Update</button>
+        <!-- <a href="/"><button type="button" class="btn btn-secondary mx-2"><i class="fas fa-eraser"></i> Skip</button></a> -->
 
       </div>
     </form>
@@ -76,6 +82,10 @@
 
   var currentFiles = [];
   var isRender = false;
+  
+  /**
+   * User selected images
+   */
   function selectedFiles(files) {
     for (let i = 0; i < files.length; i++) {
       currentFiles.push(files[i]);
@@ -83,12 +93,18 @@
     previewImage(currentFiles);
   }
 
+  /**
+   * Render preview list
+   */
   function previewImage(files) {
     $("#image-list").empty();
+    $('#images-error').empty();
     console.log("Selected images", files);
     if (!files || files.length <= 0) {
+      $('#remove-image-hint').empty();
       return;
     }
+    $('#remove-image-hint').html('- Click image to remove it');
     isRender = true;
     let i = 0;
     const callback = () => {
@@ -102,6 +118,9 @@
     showImage(files[i], callback);
   }
 
+  /**
+   * Show a image
+   */
   function showImage(file, callback) {
     const img = document.createElement("img");
     img.classList.add('img-fluid');
@@ -143,6 +162,17 @@
 
     previewImage(currentFiles);
   }
+
+  function validateForm() {
+    const valid = currentFiles && currentFiles.length > 0;
+    let error = '';
+    if(!valid){
+      error = 'You must select images.'
+    }
+    $('#images-error').html(error);
+    return valid;
+  }
+
 </script>
 
 </html>

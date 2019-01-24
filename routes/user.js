@@ -9,12 +9,12 @@ var formidable = require('formidable');
 const User = require('../models/user');
 
 //Get login page
-router.get('/login', function (req, res, next) {
+router.get('/login',userAuthMid.requiresUnLogin, function (req, res, next) {
   res.render('pages/login', { error: '', data: {} });
 });
 
 //Post login user
-router.post('/login', (req, res) => {
+router.post('/login',userAuthMid.requiresUnLogin, (req, res) => {
   const user = req.body;
   //validate input
   if (!user || !user.email || user.email == '' || !user.password || user.password == '') {
@@ -38,6 +38,7 @@ router.post('/login', (req, res) => {
       res.render('pages/login', { error: errorMessage, data: { email: user.email } });
     } else {
       req.session.userId = result._id;
+      req.session.hasInfo = result.images && result.images.length > 0
       res.redirect('/');
     }
   });
@@ -46,14 +47,14 @@ router.post('/login', (req, res) => {
 /**
  * Get register page
  */
-router.get('/register', (req, res) => {
+router.get('/register',userAuthMid.requiresUnLogin, (req, res) => {
   res.render('pages/register', { user: {}, error: {} });
 });
 
 /**
  * Create new user
  */
-router.post('/register', (req, res) => {
+router.post('/register',userAuthMid.requiresUnLogin, (req, res) => {
   const newUser = req.body;
   //Todo validate user info
 
@@ -87,7 +88,7 @@ router.post('/register', (req, res) => {
 });
 
 //Post Login with facebook user
-router.post('/login-facebook', (req, res) => {
+router.post('/login-facebook',userAuthMid.requiresUnLogin, (req, res) => {
   const user = req.body;
   //Validate user from facebook
   const api = 'https://graph.facebook.com/me?fields=id&access_token=' + user.access_token;
@@ -125,6 +126,7 @@ router.post('/login-facebook', (req, res) => {
           });
         } else { //User don't exists
           req.session.userId = result._id;
+          req.session.hasInfo = result.images && result.images.length > 0
           res.redirect('/');
         }
       });
@@ -139,7 +141,7 @@ router.get('/logout', function (req, res, next) {
     // delete session object
     req.session.destroy(function (err) {
       if (err) {
-        return next(err);
+        return res.redirect('error');
       } else {
         return res.redirect('/');
       }
@@ -149,9 +151,9 @@ router.get('/logout', function (req, res, next) {
   }
 });
 
-router.get('/update-user-info', (req, res, next) => {
-  // const id = req.session.userId;
-  const id = '5c49b747fb70b007ffda9001';
+router.get('/update-user-info',userAuthMid.requiresLogin, (req, res, next) => {
+  const id = req.session.userId;
+  // const id = '5c49b747fb70b007ffda9001';
   User.findOne({ _id: id }, (err, result) => {
     if (err) {
       res.redirect('/');
@@ -162,8 +164,9 @@ router.get('/update-user-info', (req, res, next) => {
   });
 });
 
-router.post('/update-user-info', (req, res) => {
-  const userId = '5c49b747fb70b007ffda9001';
+router.post('/update-user-info', userAuthMid.requiresLogin, (req, res) => {
+  // const userId = '5c49b747fb70b007ffda9001';
+  const userId = req.session.userId;
 
   var form = new formidable.IncomingForm();
   form.multiples = true;
@@ -179,7 +182,7 @@ router.post('/update-user-info', (req, res) => {
           //path tmp in server
           var path = file.path;
           let fileName = userId + '-' +
-            new Date().getTime() + '-' + file.name;
+            new Date().getTime() + '-' + i;
           //set new path to file
           var newpath = form.uploadDir + fileName;
           userImages.push(newpath);
@@ -192,7 +195,7 @@ router.post('/update-user-info', (req, res) => {
         //path tmp in server
         var path = file.path;
         let fileName = userId + '-' +
-          new Date().getTime() + '-' + file.name;
+          new Date().getTime() + '-' + 0;
         //set new path to file
         var newpath = form.uploadDir + fileName;
         userImages.push(newpath);
@@ -208,6 +211,7 @@ router.post('/update-user-info', (req, res) => {
           return;
         }
 
+        req.session.hasInfo = true;
         res.redirect('/');
       });
     } catch (err) {
