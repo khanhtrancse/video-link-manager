@@ -9,15 +9,18 @@
 </head>
 
 <body>
-  <%if(showNav){%>
   <% include ../partials/user-nav.ejs %>
-  <%}%>
 
-  <div class="container container-background">
+  <div class="container container-background pb-5">
     <form class="form-horizontal" enctype="multipart/form-data" method="POST" action="/update-user-info" onsubmit="return validateForm()">
       <div class="row justify-content-center">
         <h2 class="text-center">Update your information</h2>
       </div>
+      <%if(showRequireHint){%>
+      <div class="d-flex justify-content-center">
+        <h4 class="text-info">You must update you information to continue.</h4>
+      </div>
+      <%}%>
       <hr>
 
       <!--Avatar-->
@@ -31,7 +34,7 @@
         </div>
       </div>
       <div class="d-flex justify-content-center mb-2">
-          <small class="text-center text-danger" id="avatar-error"></small>
+        <small class="text-center text-danger" id="avatar-error"></small>
       </div>
 
       <!--Username-->
@@ -63,8 +66,8 @@
       </div>
 
       <!--Image-->
-      <div class="row mb-2 justify-content-center">
-        <div class="col-12 col-md-4 card">
+      <div class="row mb-2 justify-content-center py-2 my-2">
+        <div class="col-12 col-md-4 card py-2">
           <div class="text-center"><b>Passport 1 (Front)</b></div>
           <div class="d-flex justify-content-center">
             <img id="image-passport-front" class="passport-image mb-2" src="<%=user.passport_front%>" />
@@ -76,7 +79,7 @@
             </div>
           </div>
         </div>
-        <div class="col-12 col-md-4 card">
+        <div class="col-12 col-md-4 card py-2">
           <div class="text-center"><b>Passport 2 (Real)</b></div>
           <div class="d-flex justify-content-center">
             <img id="image-passport-real" class="passport-image mb-2" src="<%=user.passport_real%>" />
@@ -90,7 +93,7 @@
         </div>
       </div>
       <div class="d-flex justify-content-center">
-          <small class="text-danger" id="passport-error"></small>
+        <small class="text-danger" id="passport-error"></small>
       </div>
 
       <div class="row justify-content-center mb-5">

@@ -159,11 +159,11 @@ controller.getUpdateInfoPage = async (req, res, next) => {
     const id = req.session.userId;
     // const id = '5c4ad9c77929a1108af00cd1';
     //Navigation hidden when user have not update images
-    const showNav = req.session.hasInfo;
+    const showRequireHint = !req.session.hasInfo;
 
     try {
         const result = await User.findOne({ _id: id });
-        res.render('pages/update-user-info', { user: result, showNav });
+        res.render('pages/update-user-info', { user: result, showRequireHint });
     } catch (error) {
         next(error);
     }
