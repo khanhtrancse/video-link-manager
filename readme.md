@@ -36,7 +36,9 @@ A web that allows user upload and manage Youtube Video.
 
 **Note:** Facebook Login requires https protocol so you can't test login with Facebook feature. If you want to test this fearture, please do:
  * Change ```facebookId``` in ```public/javascripts/login.js``` file to your Facebook id.
+
  or
+ 
  * Send me your facebook link and I will make you as **tester**. My email: ```khanhtran.cse@gmail.com```
 
 ### Admin
