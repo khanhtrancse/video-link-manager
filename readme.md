@@ -2,6 +2,19 @@
 
 A web that allows user upload and manage Youtube Video.
 
+## Requirements
+
+1. Nodejs
+2. This project uses remote database ( https://mlab.com ), so you can run it without any database config.
+
+If you want to run local database, you have to change ```DATABASE_URI``` field in ```config.js``` file in root directory to your database address. 
+
+3. This project uses remote image host to save uploaded images. 
+
+If you want to save images at localhost, change ```SAVE_IMAGE_IN_REMOTE_HOST``` field in ```config.js``` file in root directory to ```false```.
+
+**Note:** This project will response slowly for some requests because this project uses remote server.
+
 ## Run instruction
 
 1. Go to root directory.
@@ -29,7 +42,7 @@ A web that allows user upload and manage Youtube Video.
 
 ## Screenshots
 
-This is some screenshot images. To view all image, [click here](screenshots)
+This is some screenshot images. To view all images, [click here](screenshots)
 
 Login
 ![login](screenshots/user-login.png)

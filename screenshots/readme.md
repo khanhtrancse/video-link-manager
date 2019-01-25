@@ -26,6 +26,8 @@
 
 ## My video
 
+![register](user-my-video-3.png)
+
 ![register](user-my-video-2.png)
 
 ![register](user-my-video.png)
@@ -47,10 +49,12 @@
 
 ![register](admin-view-videos.png)
 
-![register](admin-view-videos-2.png)
+![register](admin-view-videos-3.png)
 
 ## Admin view users
 
 ![register](admin-view-users.png)
 
 ![register](admin-view-users-2.png)
+
+![register](admin-view-users-3.png)
