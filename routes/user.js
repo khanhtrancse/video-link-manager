@@ -1,44 +1,44 @@
 var express = require('express');
 var router = express.Router();
 
-const userAuthMid = require('../middleware/authentication');
+const authentication = require('../middleware/authentication');
 const userController = require('../controllers/user');
 
 //GET Login page
-router.get('/login', userAuthMid.requiresUnLogin, userController.getLoginPage);
+router.get('/login', authentication.requiresUnLogin, userController.getLoginPage);
 
 //Post request to login
-router.post('/login', userAuthMid.requiresUnLogin, userController.login);
+router.post('/login', authentication.requiresUnLogin, userController.login);
 
 //Get register page
-router.get('/register', userAuthMid.requiresUnLogin, userController.getRegisterPage);
+router.get('/register', authentication.requiresUnLogin, userController.getRegisterPage);
 
 //Post request to create new user
-router.post('/register', userAuthMid.requiresUnLogin, userController.createNewUser);
+router.post('/register', authentication.requiresUnLogin, userController.createNewUser);
 
 //Post request to login with facebook
-router.post('/login-facebook', userAuthMid.requiresUnLogin, userController.loginWithFacebook);
+router.post('/login-facebook', authentication.requiresUnLogin, userController.loginWithFacebook);
 
 //Request to logout
 router.get('/logout', userController.logout);
 
-//Get Update Info page
-router.get('/update-user-info', userAuthMid.requiresLogin, userController.getUpdateInfoPage);
+//Get Update Info page. This require authen user
+router.get('/update-user-info', authentication.requiresLogin, userController.getUpdateInfoPage);
 
-//POST request to update user info
-router.post('/update-user-info', userAuthMid.requiresLogin, userController.updateUserInfo);
+//POST request to update user info.  This require authen user
+router.post('/update-user-info', authentication.requiresLogin, userController.updateUserInfo);
 
-//GET add video page
-router.get('/add-video',userAuthMid.requiresFullInfoUser, userController.getAddVideoPage);
+//GET add video page. This require authen user
+router.get('/add-video',authentication.requiresFullInfoUser, userController.getAddVideoPage);
 
-//POST request to create new video
-router.post('/add-video', userAuthMid.requiresFullInfoUser, userController.addVideo);
-
-// GET home page. This require authen user
-router.get('/',userAuthMid.requiresFullInfoUser,userController.getHomePage);
+//POST request to create new video. This require authen user
+router.post('/add-video', authentication.requiresFullInfoUser, userController.addVideo);
 
 // GET home page. This require authen user
-router.get('/my-videos',userAuthMid.requiresFullInfoUser,userController.getMyVideoPage
+router.get('/',authentication.requiresFullInfoUser,userController.getHomePage);
+
+// GET home page. This require authen user
+router.get('/my-videos',authentication.requiresFullInfoUser,userController.getMyVideoPage
 );
 
 module.exports = router;

@@ -46,7 +46,8 @@ function getTimeStringOf(time) {
 }
 
 /**
- * Upload image to remote host
+ * Upload image to remote host. 
+ * Return a promise that resolves with image link if success.
  * @param {*} path 
  */
 async function uploadImage(path) {

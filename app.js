@@ -18,6 +18,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 //Use session
+//Because this project serves research purpuse, this uses RAM to save session
 app.use(session({
   secret: 'abc-xyz-video-link',
   resave: true,
@@ -39,6 +40,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//use router
 app.use('/admin',adminRouter);
 app.use('/', userRouter);
 
