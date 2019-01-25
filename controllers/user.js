@@ -104,9 +104,10 @@ controller.createNewUser = async (req, res, next) => {
 //Login with facebook
 controller.loginWithFacebook = async (req, res, next) => {
     const user = req.body;
-    //Validate user from facebook
-    const api = 'https://graph.facebook.com/me?fields=id&access_token=' + user.access_token;
+    
     try {
+        //Validate user from facebook
+        const api = 'https://graph.facebook.com/me?fields=id&access_token=' + user.access_token;
         const result = await request(api);
         const { id } = JSON.parse(result);
 
@@ -115,6 +116,7 @@ controller.loginWithFacebook = async (req, res, next) => {
             return;
         }
 
+        //Valid facebook user
         const data = { tp_id: user.id, email: user.email, name: user.username };
         const existUser = await User.findOne({ email: data.email });
 
@@ -129,13 +131,13 @@ controller.loginWithFacebook = async (req, res, next) => {
             data.avatar = Config.DEFAULT_AVATAR;
             data.passport_front = Config.DEFAULT_PASSPORT;
             data.passport_real = Config.DEFAULT_PASSPORT;
-            newUser.join_timestamp = new Date().getTime();
+            data.join_timestamp = new Date().getTime();
             const newUser = new User(data);
             await newUser.save();
 
             //Set user login
             req.session.userId = newUser._id;
-            req.session.userName = existUser.name;
+            req.session.userName = newUser.name;
             req.session.hasInfo = false;
             res.redirect('/');
         }

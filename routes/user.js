@@ -38,6 +38,7 @@ router.post('/add-video', userAuthMid.requiresFullInfoUser, userController.addVi
 router.get('/',userAuthMid.requiresFullInfoUser,userController.getHomePage);
 
 // GET home page. This require authen user
-router.get('/my-videos',userAuthMid.requiresFullInfoUser,userController.getMyVideoPage);
+router.get('/my-videos',userAuthMid.requiresFullInfoUser,userController.getMyVideoPage
+);
 
 module.exports = router;

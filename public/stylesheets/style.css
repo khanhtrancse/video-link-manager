@@ -84,7 +84,7 @@ body{
 }
 
 .passport-image{
-  width: 15em;
-  min-height: 10em;
-  max-height: 20em;
+  max-width: 20em;
+  max-height: 15em;
+  overflow: none;
 }
