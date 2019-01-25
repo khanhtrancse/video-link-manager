@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    Admin login
+  </title>
+  <% include ../../partials/head.ejs %>
+</head>
+
+<body class="background">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        <div class="card card-signin my-5">
+          <div class="card-body">
+            <h5 class="card-title text-center">Login</h5>
+
+            <form class="form-signin" action="/admin/login" method="POST">
+              <div class="form-group">
+                <label for="inputUsername">Username</label>
+                <input type="text" name="username" id="inputUsername" class="form-control" placeholder=""
+                  required value="<%=data.username%>">
+              </div>
+
+              <div class="form-group">
+                <label for="inputPassword">Password</label>
+                <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password"
+                  required>
+              </div>
+
+              <small class="d-flex justify-content-center align-items-center text-danger mb-3">
+                <%=error%></small>
+
+              <div class="d-flex row justify-content-center">
+                <button class="btn btn-primary" type="submit">Login</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

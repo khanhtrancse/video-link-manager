@@ -30,14 +30,10 @@ UserSchema.methods.validatePassword = function(password){
 /**
  * Check a email is available or not
  */
-UserSchema.statics.isAvailableEmail = function(email,callback){
-    this.find({email},(err,result)=>{
-        if(err){
-            callback(err);
-            return;
-        }
-        callback(null,result.length == 0);
-    });
+UserSchema.statics.isAvailableEmail = async function(email,callback){
+    //Find user by email
+    const result = await this.findOne({email});
+    return !result;
 }
 
 //Create user model

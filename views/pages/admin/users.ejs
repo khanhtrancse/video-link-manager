@@ -3,33 +3,25 @@
 
 <head>
   <title>
-    Home
+    Users
   </title>
-  <% include ../partials/head.ejs %>
+  <% include ../../partials/head.ejs %>
 </head>
 
 <body>
-  <% include ../partials/user-nav.ejs %>
+  <% include ../../partials/admin-nav.ejs %>
 
   <div class="container">
     <div class="row justify-content-center align-item-center card-container">
-
-      <%if(videos.length ==0){%>
+      <small class="text-danger"><%=error%></small>
+      <%if(users.length ==0){%>
       <!--No video-->
-      <a href="/add-video" class="card mx-5 my-3 home-item bg-info text-white">
-        <div class="row justify-content-center">
-          <img class="card-img-top home-item-icon mx-3 my-3" src="/images/video-icon.png" alt="View User">
-        </div>
-        <div class="card-body">
-          <h2>Add video</h2>
-          <p class="card-text">Add new video</p>
-        </div>
-      </a>
+      <h3 class="text-info my-5">No Users</h3>
       <%} else {
-        for(let i = 0;i< videos.length;i++){
+        for(let i = 0;i< users.length;i++){
           let statusText;
           let itemClass;
-          const status = videos[i].status;
+          const status = users[i].status;
           if(status == 'submitted'){
             statusClass = "text-info";
             statusText='Submitted';
@@ -46,12 +38,12 @@
       <!--Show list video-->
       <div class="col-12 row video-item-background <%=itemClass%> mb-3 mt-1 py-3">
         <div class="col-12 col-md-3">
-          <img class="col-12" src="<%=videos[i].thumbnail%>" />
+          <img class="col-12" src="<%=users[i].thumbnail%>" />
         </div>
         <div class="col-12 col-md-9">
           <div class="col-12 mx-0 px-0 row">
             <h3 class="col-9 px-0">
-              <%=videos[i].subject %>
+              <%=users[i].subject %>
             </h3>
             <div class="col-3 row justify-content-center align-item-center py-auto my-auto">
               <div class="<%=statusClass%>">
@@ -61,14 +53,14 @@
             </div>
           </div>
           <div><b>Type:</b>
-            <%=videos[i].type%>
+            <%=users[i].type%>
           </div>
           <div><b>Time:</b>
-            <%=videos[i].time%>
+            <%=users[i].time%>
           </div>
           <div><b>Description:</b>
             <p class="mx-3">
-              <%=videos[i].description%>
+              <%=users[i].description%>
             </p>
           </div>
         </div>

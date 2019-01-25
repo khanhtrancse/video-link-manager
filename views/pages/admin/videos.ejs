@@ -3,28 +3,20 @@
 
 <head>
   <title>
-    Home
+    Videos
   </title>
-  <% include ../partials/head.ejs %>
+  <% include ../../partials/head.ejs %>
 </head>
 
 <body>
-  <% include ../partials/user-nav.ejs %>
+  <% include ../../partials/admin-nav.ejs %>
 
   <div class="container">
     <div class="row justify-content-center align-item-center card-container">
-
+      <small class="text-danger"><%=error%></small>
       <%if(videos.length ==0){%>
       <!--No video-->
-      <a href="/add-video" class="card mx-5 my-3 home-item bg-info text-white">
-        <div class="row justify-content-center">
-          <img class="card-img-top home-item-icon mx-3 my-3" src="/images/video-icon.png" alt="View User">
-        </div>
-        <div class="card-body">
-          <h2>Add video</h2>
-          <p class="card-text">Add new video</p>
-        </div>
-      </a>
+      <h3 class="text-info my-5">No videos</h3>
       <%} else {
         for(let i = 0;i< videos.length;i++){
           let statusText;

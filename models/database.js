@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 require('../models/video');
 //create user model
 require('./user');
+//create admin model
+require('./admin');
 
 /**
  * Connect to database
