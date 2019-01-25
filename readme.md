@@ -17,8 +17,8 @@ A web that allows user upload and manage Youtube Video.
 2. Install dependent packages: ```npm install```
 3. Run server: ```npm start```. Server runs at address ```localhost:3000```.
 4. Login to admin:
-    a. Go to ```localhost:3000/admin```
-    b. Login with username **admin** and password **admin**.
+    - Go to ```localhost:3000/admin```
+    - Login with username: **admin** and password: **admin**.
 
 **Note:** This project will response slowly for some requests because this project uses remote server.
 
