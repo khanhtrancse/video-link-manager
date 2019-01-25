@@ -1,6 +1,11 @@
+/**
+ * Change this to your facebook id
+ */
+const facebookId = '363610701143737';
+
 window.fbAsyncInit = function () {
     FB.init({
-        appId: '363610701143737',
+        appId: facebookId,
         cookie: true,
         xfbml: true,
         version: 'v3.2'
@@ -22,7 +27,7 @@ window.fbAsyncInit = function () {
     var js, fjs = d.getElementsByTagName(s)[0];
     if (d.getElementById(id)) return;
     js = d.createElement(s); js.id = id;
-    js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2&appId=363610701143737&autoLogAppEvents=1';
+    js.src = `https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2&appId=${facebookId}&autoLogAppEvents=1`;
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
