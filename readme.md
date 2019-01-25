@@ -27,6 +27,9 @@ A web that allows user upload and manage Youtube Video.
 3. View all users (sorted by name)
 4. Approve or reject a video
 
-##Screenshots
+## Screenshots
 
 This is some screenshot images. To view all image, [click here](screenshots)
+
+Login
+![alt text](screenshots/user-login.png)
