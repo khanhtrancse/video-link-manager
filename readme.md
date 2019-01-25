@@ -39,6 +39,8 @@ Update infor
 ![register](screenshots/user-update-info.png)
 Add video
 ![register](screenshots/user-add-video.png)
+My video
+![register](screenshots/user-my-video-2.png)
 Home
 ![register](screenshots/user-home.png)
 Admin view videos
