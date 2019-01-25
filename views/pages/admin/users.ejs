@@ -13,56 +13,93 @@
 
   <div class="container">
     <div class="row justify-content-center align-item-center card-container">
-      <small class="text-danger"><%=error%></small>
       <%if(users.length ==0){%>
-      <!--No video-->
+      <!--No user-->
       <h3 class="text-info my-5">No Users</h3>
       <%} else {
         for(let i = 0;i< users.length;i++){
           let statusText;
-          let itemClass;
-          const status = users[i].status;
-          if(status == 'submitted'){
-            statusClass = "text-info";
-            statusText='Submitted';
-          } else if(status == 'approved'){
+          let statusClass;
+          const status = users[i].updated_info;
+          if(status){
             statusClass = "text-success";
-            statusText='Approved';
-            itemClass = "video-item-approved";
+            statusText='Updated passport';
           } else {
             statusClass = "text-danger";
-            statusText='Rejected';
-            itemClass = "video-item-rejected";
+            statusText='No passport';
+          } 
+
+          let type = '';
+          if(users[i].password){
+            type = "Normal";
+          }
+          if(users[i].tp_id){
+            if(type != ''){
+              type += ' | ';
+            }
+            type += "Facebook";
           }
         %>
       <!--Show list video-->
-      <div class="col-12 row video-item-background <%=itemClass%> mb-3 mt-1 py-3">
+      <div class="col-12 row video-item-background mb-3 mt-1 py-3">
+        <!--Avatar-->
         <div class="col-12 col-md-3">
-          <img class="col-12" src="<%=users[i].thumbnail%>" />
+          <div class="d-flex justify-content-center">
+            <a href="<%=users[i].avatar%>">
+              <img class="avatar-normal" src="<%=users[i].avatar%>" />
+            </a>
+          </div>
         </div>
+        <!--Info-->
         <div class="col-12 col-md-9">
+          <!--Username-->
           <div class="col-12 mx-0 px-0 row">
-            <h3 class="col-9 px-0">
-              <%=users[i].subject %>
+            <h3>
+              <%=users[i].name %>
             </h3>
-            <div class="col-3 row justify-content-center align-item-center py-auto my-auto">
-              <div class="<%=statusClass%>">
-                <%=statusText%>
-              </div>
+          </div>
+          <!--Email-->
+          <div><b>Email:</b>
+            <%=users[i].email%>
+          </div>
 
+          <!--Type-->
+          <div><b>Type:</b>
+            <%=type%>
+          </div>
+
+          <!--Join time-->
+          <div><b>Join time:</b>
+            <%=users[i].join_time%>
+          </div>
+
+          <!--Status-->
+          <div><b>Status:</b>
+            <span class="<%=statusClass%>">
+              <%=statusText%>
+            </span>
+          </div>
+          <!--Passport-->
+          <%if(users[i].updated_info){%>
+          <div><b>Passport:</b></div>
+          <div class="row">
+            <div class="col-12 col-md-6 my-2">
+              <div class="d-flex justify-content-center">
+                <a href="<%=users[i].passport_front%>">
+                  <img class="passport-image" src="<%=users[i].passport_front%>" />
+                </a>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6 my-2">
+              <div class="d-flex justify-content-center">
+                <a href="<%=users[i].passport_real%>">
+                  <img class="passport-image" src="<%=users[i].passport_real%>" />
+                </a>
+              </div>
             </div>
           </div>
-          <div><b>Type:</b>
-            <%=users[i].type%>
-          </div>
-          <div><b>Time:</b>
-            <%=users[i].time%>
-          </div>
-          <div><b>Description:</b>
-            <p class="mx-3">
-              <%=users[i].description%>
-            </p>
-          </div>
+          <%}%>
         </div>
       </div>
       <%}}%>

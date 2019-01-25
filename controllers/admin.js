@@ -17,7 +17,7 @@ controller.getLoginPage = (req, res) => {
 };
 
 //Request login
-controller.login = async (req, res) => {
+controller.login = async (req, res, next) => {
     const user = req.body;
     console.log('Admin', user);
     if (!user || !user.username || !user.password) {
@@ -45,7 +45,7 @@ controller.login = async (req, res) => {
 };
 
 //Display video page
-controller.getVideoPage = async (req, res) => {
+controller.getVideoPage = async (req, res, next) => {
     try {
         const result = await Video.find(null, null, { sort: { timestamp: -1 } });
         let videos = result ? result : [];
@@ -58,35 +58,25 @@ controller.getVideoPage = async (req, res) => {
     } catch (error) {
         next(error);
     }
-    Video.find((error, result) => {
-        let errorMessage = '';
-        let videos = [];
-        if (error) {
-            errorMessage = 'Database error';
-        } else if (result) {
-            videos = result;
-        }
-
-    });
 };
 
 //Display user page
-controller.getUserPage = async (req, res) => {
-    User.find((error, result) => {
-        let errorMessage = '';
-        let users = [];
-        if (error) {
-            errorMessage = 'Database error';
-        } else if (result) {
-            users = result;
-        }
-
-        res.render('pages/admin/users', { error: errorMessage, users });
-    });;
+controller.getUserPage = async (req, res,next ) => {
+    try{
+        const result = await User.find(null,null,{sort: {name: 1}});
+        let users = result?result:[];
+        users = users.map(item=>{
+            item.join_time = Utils.getTimeStringOf(item.join_timestamp);
+            return item;
+        })
+        res.render('pages/admin/users', {users });
+    } catch(error){
+        next(error);
+    }
 };
 
 //Request to logout
-controller.logout = (req, res) => {
+controller.logout = (req, res, next) => {
     if (req.session) {
         req.session.destroy((err) => {
             res.redirect('/admin');

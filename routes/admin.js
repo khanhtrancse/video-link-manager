@@ -17,7 +17,7 @@ router.post('/login', authentication.requiresNotAdmin, adminController.login);
 router.get('/videos', adminController.getVideoPage);
 
 //GET user page
-router.get('/users', authentication.requiresAdmin, adminController.getUserPage);
+router.get('/users', adminController.getUserPage);
 
 //GET request to logout
 router.get('/logout', adminController.logout);

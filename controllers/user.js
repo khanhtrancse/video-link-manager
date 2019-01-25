@@ -88,6 +88,7 @@ controller.createNewUser = async (req, res, next) => {
         newUser.avatar = Config.DEFAULT_AVATAR;
         newUser.passport_front = Config.DEFAULT_PASSPORT;
         newUser.passport_real = Config.DEFAULT_PASSPORT;
+        newUser.join_timestamp = new Date().getTime();
 
         const user = new User(newUser);
         user.setPassword(newUser.password);
@@ -125,6 +126,7 @@ controller.loginWithFacebook = async (req, res, next) => {
             data.avatar = Config.DEFAULT_AVATAR;
             data.passport_front = Config.DEFAULT_PASSPORT;
             data.passport_real = Config.DEFAULT_PASSPORT;
+            newUser.join_timestamp = new Date().getTime();
             const newUser = new User(data);
             await newUser.save();
             req.session.userId = newUser._id;

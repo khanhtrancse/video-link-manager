@@ -12,6 +12,7 @@ const user = {
     passport_real: 'string',
     avatar: 'string',
     updated_info: Boolean,
+    join_timestamp: Number
 }
 
 const UserSchema = new Schema(user);

@@ -73,7 +73,13 @@ body{
 
 .avatar-large{
   width: 10em;
-  max-height: 10em;
+  height: 10em;
+  border-radius: 50%;
+}
+
+.avatar-normal{
+  width: 10em;
+  height: 10em;
   border-radius: 50%;
 }
 
