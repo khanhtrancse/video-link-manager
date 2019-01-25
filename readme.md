@@ -32,4 +32,16 @@ A web that allows user upload and manage Youtube Video.
 This is some screenshot images. To view all image, [click here](screenshots)
 
 Login
-![alt text](screenshots/user-login.png)
+![login](screenshots/user-login.png)
+Register
+![register](screenshots/user-register.png)
+Update infor
+![register](screenshots/user-update-info.png)
+Add video
+![register](screenshots/user-add-video.png)
+Home
+![register](screenshots/user-home.png)
+Admin view videos
+![register](screenshots/admin-view-videos.png)
+Admin view users
+![register](screenshots/admin-view-users.png)
