@@ -20,7 +20,7 @@ A web that allows user upload and manage Youtube Video.
     - Go to ```localhost:3000/admin```
     - Login with username: **admin** and password: **admin**.
 
-**Note:** This project will response slowly for some requests because this project uses remote server.
+**Note:** This project will response slowly for some requests because this project uses the remote database.
 
 ## Features
 
@@ -38,7 +38,7 @@ A web that allows user upload and manage Youtube Video.
  * Change ```facebookId``` in ```public/javascripts/login.js``` file to your Facebook id.
 
  or
- 
+
  * Send me your facebook link and I will make you as **tester**. My email: ```khanhtran.cse@gmail.com```
 
 ### Admin
