@@ -85,6 +85,7 @@ controller.createNewUser = async (req, res, next) => {
             return;
         }
 
+        //Create new user
         newUser.avatar = Config.DEFAULT_AVATAR;
         newUser.passport_front = Config.DEFAULT_PASSPORT;
         newUser.passport_real = Config.DEFAULT_PASSPORT;
@@ -93,6 +94,7 @@ controller.createNewUser = async (req, res, next) => {
         const user = new User(newUser);
         user.setPassword(newUser.password);
         await user.save();
+        
         res.render('pages/register-success');
     } catch (error) {
         next(error);
@@ -116,20 +118,25 @@ controller.loginWithFacebook = async (req, res, next) => {
         const data = { tp_id: user.id, email: user.email, name: user.username };
         const existUser = await User.findOne({ email: data.email });
 
+        //Check facebook user exists or not
         if (existUser) {
             req.session.userId = existUser._id;
             req.session.userName = existUser.name;
             req.session.hasInfo = existUser.updated_info;
             res.redirect('/');
         } else {
-            //First login
+            //First login, so we must create new user
             data.avatar = Config.DEFAULT_AVATAR;
             data.passport_front = Config.DEFAULT_PASSPORT;
             data.passport_real = Config.DEFAULT_PASSPORT;
             newUser.join_timestamp = new Date().getTime();
             const newUser = new User(data);
             await newUser.save();
+
+            //Set user login
             req.session.userId = newUser._id;
+            req.session.userName = existUser.name;
+            req.session.hasInfo = false;
             res.redirect('/');
         }
 
@@ -158,6 +165,7 @@ controller.logout = (req, res, next) => {
 controller.getUpdateInfoPage = async (req, res, next) => {
     const id = req.session.userId;
     // const id = '5c4ad9c77929a1108af00cd1';
+
     //Navigation hidden when user have not update images
     const showRequireHint = !req.session.hasInfo;
 
@@ -178,25 +186,37 @@ controller.updateUserInfo = async (req, res, next) => {
     var form = new formidable.IncomingForm();
     //Image folder
     form.uploadDir = "public/upload/";
-    form.parse(req, function (err, fields, files) {
+    form.parse(req, async function (err, fields, files) {
         if (err) {
             next(err);
             return;
         }
         try {
             const imageNames = ['avatar', 'passport_real', 'passport_front'];
-            imageNames.forEach(item => {
-                //path tmp in server
-                const file = files[item];
-                var path = file.path;
-                let fileName = userId + '-' + item;
-                //set new path to file
-                var newpath = form.uploadDir + fileName;
-                updateFields[item] = '/upload/' + fileName;
-                fs.rename(path, newpath, function (err) {
-                    if (err) throw err;
-                });
-            })
+            for (let i = 0; i < imageNames.length; i++) {
+                const item = imageNames[i];
+                if (Config.SAVE_IMAGE_IN_REMOTE_HOST) {
+                    //Upload image to imgur.com
+                    try {
+                        const result = await Utils.uploadImage(files[item].path);
+                        updateFields[item] = result;
+                    } catch (error) {
+                        next(error);
+                        return;
+                    }
+                } else {
+                    //Save image to server
+                    const file = files[item];
+                    var path = file.path;
+                    let fileName = userId + '-' + item;
+                    //set new path to file
+                    var newpath = form.uploadDir + fileName;
+                    updateFields[item] = '/upload/' + fileName;
+                    fs.rename(path, newpath, function (err) {
+                        if (err) throw err;
+                    });
+                }
+            }
 
             updateFields.updated_info = true;
             User.updateOne({ _id: userId }, updateFields, (err) => {
@@ -256,14 +276,13 @@ controller.addVideo = async (req, res) => {
 
 //Display home page
 controller.getHomePage = async function (req, res, next) {
-    const userId = req.session.userId;
     try {
-        const result = await Video.find({ status: 'approved' },null,{sort: {timestamp: -1}});
-        const videos = result?result.map(item => {
+        const result = await Video.find({ status: 'approved' }, null, { sort: { timestamp: -1 } });
+        const videos = result ? result.map(item => {
             item.thumbnail = Utils.getThumbnailImageOfVideo(item.link);
             item.time = Utils.getTimeStringOf(item.timestamp);
             return item;
-        }):[];
+        }) : [];
         res.render('pages/home', { videos, showAddVideoButton: false });
     } catch (error) {
         next(error);
@@ -274,17 +293,19 @@ controller.getHomePage = async function (req, res, next) {
 controller.getMyVideoPage = async function (req, res, next) {
     const userId = req.session.userId;
     try {
-        const result = await Video.find({ user_id: userId },null,{sort: {timestamp: -1}});
-        const videos = result?result.map(item => {
+        const result = await Video.find({ user_id: userId }, null, { sort: { timestamp: -1 } });
+        
+        const videos = result ? result.map(item => {
+            //Get video thumbnail from youtube
             item.thumbnail = Utils.getThumbnailImageOfVideo(item.link);
+            //Convert timestamp to dd:MM:yyyy hh:mm to display
             item.time = Utils.getTimeStringOf(item.timestamp);
             return item;
-        }):[];
-        res.render('pages/home', { videos , showAddVideoButton: true });
+        }) : [];
+        res.render('pages/home', { videos, showAddVideoButton: true });
     } catch (error) {
         next(error);
     }
 }
-
 
 module.exports = controller;
