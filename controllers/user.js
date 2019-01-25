@@ -1,6 +1,10 @@
+const request = require('request-promise');
+const fs = require('fs');
+const formidable = require('formidable');
+
 const Video = require('../models/video');
 const User = require('../models/user');
-var request = require('request-promise');
+const Utils = require('../others/utils');
 
 const controller = {};
 
@@ -145,11 +149,125 @@ controller.getUpdateInfoPage = async (req, res, next) => {
     //Navigation hidden when user have not update images
     const showNav = req.session.hasInfo;
 
-    try{
-        const result = User.findOne({_id: id});
+    try {
+        const result = User.findOne({ _id: id });
         res.render('pages/update-user-info', { user: result, showNav });
-    } catch(error){
+    } catch (error) {
         next(error);
     }
-  }
+}
+
+//Update avatar and passport
+controller.updateUserInfo = async (req, res) => {
+    // const userId = '5c49b747fb70b007ffda9001';
+    const userId = req.session.userId;
+
+    var form = new formidable.IncomingForm();
+    form.multiples = true;
+    //Image folder
+    form.uploadDir = "public/upload/";
+    //Start upload
+    form.parse(req, function (err, fields, files) {
+        try {
+            const userImages = [];
+            if (Array.isArray(files.images)) {
+                for (let i = 0; i < files.images.length; i++) {
+                    const file = files.images[i];
+                    //path tmp in server
+                    var path = file.path;
+                    let fileName = userId + '-' +
+                        new Date().getTime() + '-' + i;
+                    //set new path to file
+                    var newpath = form.uploadDir + fileName;
+                    userImages.push(newpath);
+                    fs.rename(path, newpath, function (err) {
+                        if (err) throw err;
+                    });
+                }
+            } else {
+                const file = files.images;
+                //path tmp in server
+                var path = file.path;
+                let fileName = userId + '-' +
+                    new Date().getTime() + '-' + 0;
+                //set new path to file
+                var newpath = form.uploadDir + fileName;
+                userImages.push(newpath);
+                fs.rename(path, newpath, function (err) {
+                    if (err) throw err;
+                });
+            }
+
+            User.updateOne({ _id: userId }, { images: userImages }, (err) => {
+                if (err) {
+                    console.log('UPdate image error', err);
+                    res.redirect('error');
+                    return;
+                }
+
+                req.session.hasInfo = true;
+                res.redirect('/');
+            });
+        } catch (err) {
+            console.log(err);
+            res.redirect('error');
+        }
+    });
+};
+
+/**
+ * Render add video page with exist data and error
+ * @param {*} res 
+ * @param {*} error 
+ * @param {*} data 
+ */
+function renderAddVideoPage(res, error, data) {
+    res.render('pages/add-video', { error, data });
+}
+
+//Display add video page
+controller.getAddVideoPage = (req, res) => {
+    renderAddVideoPage(res);
+}
+
+//Add new video
+controller.addVideo = async (req, res) => {
+    const data = req.body;
+    const userId = req.session.userId;
+    if (!data ||
+        !data.link || data.link == '' ||
+        !data.subject || data.subject == '') {
+        res.render('pages/add-video', { error: 'Inputs are invalid' });
+        return;
+    }
+    data.user_id = userId;
+    data.status = 'submitted';
+    data.timestamp = new Date().getTime();
+
+    Video.create(data, (err) => {
+        if (err) {
+            console.log('Create video error', err);
+            res.render('pages/add-video', { error: 'Something went wrong' });
+            return;
+        }
+        res.redirect('/');
+    });
+}
+
+//Display home page
+controller.getHomePage = async function (req, res, next) {
+    const userId = req.session.userId;
+    try {
+        const result = await Video.find({ user_id: userId });
+        const videos = result.map(item => {
+            item.thumbnail = Utils.getThumbnailImageOfVideo(item.link);
+            item.time = Utils.getTimeStringOf(item.timestamp);
+            return item;
+        });
+        res.render('pages/home', { videos });
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = controller;

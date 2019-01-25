@@ -26,9 +26,27 @@ function requiresFullInfoUser(req, res, next) {
     }
 }
 
-    module.exports = {
-        requiresLogin,
-        requiresFullInfoUser,
-        requiresUnLogin
+function requiresAdmin(req, res, next) {
+    if (req.session && req.session.adminId) {
+        return next();
+    } else {
+        res.redirect('/admin/login');
     }
+}
+
+function requiresNotAdmin(req, res, next) {
+    if (req.session && req.session.adminId) {
+        res.redirect('/admin');
+    } else {
+        return next();
+    }
+}
+
+module.exports = {
+    requiresLogin,
+    requiresFullInfoUser,
+    requiresUnLogin,
+    requiresAdmin,
+    requiresNotAdmin
+}
 

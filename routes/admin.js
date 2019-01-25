@@ -1,70 +1,25 @@
 var express = require('express');
 var router = express.Router();
 
-const Admin = require('../models/admin');
-const Video = require('../models/video');
-const User = require('../models/user');
+const adminController = require('../controllers/admin');
+const authentication = require('../middleware/authentication');
 
-const userAuth = require('../middleware/user-auth');
-const Utils = require('../others/utils');
+//GET home page
+router.get('/', authentication.requiresAdmin, adminController.getHomePage);
 
-router.get('/', (req, res) => {
-    res.render('pages/admin/home');
-});
+//GET login page
+router.get('/login', authentication.requiresNotAdmin, adminController.getLoginPage);
 
-router.get('/login', (req, res) => {
-    res.render('pages/admin/login', { data: {}, error: '' });
-});
+//POST request to login
+router.post('/login', authentication.requiresNotAdmin, adminController.login);
 
-router.post('/login', (req, res) => {
-    const user = req.body;
-    console.log('Admin', user);
-    if (!user || !user.username || !user.password) {
-        res.render('pages/admin/login', { data: user, error: 'Username or password is incorrect.' });
-        return;
-    }
+//GET videos page
+router.get('/videos', authentication.requiresAdmin, adminController.getVideoPage);
 
-    Admin.findOne({ username: user.username }, (error, result) => {
-        if (error) {
-            res.render('pages/admin/login', { data: user, error: 'Something wrent wrong.' });
-            return;
-        } else if (!result || !result.validatePassword(user.password)) {
-            res.render('pages/admin/login', { data: user, error: 'Username or password is incorrect.' });
-            return;
-        }
+//GET user page
+router.get('/users', authentication.requiresAdmin, adminController.getUserPage);
 
-        req.session.adminId = result._id;
-        req.session.admin = true;
-        res.redirect('/admin');
-    });
-});
-
-router.get('/videos', (req, res) => {
-    Video.find((error, result) => {
-        let errorMessage = '';
-        let videos = [];
-        if (error) {
-            errorMessage = 'Database error';
-        } else if (result) {
-            videos = result;
-        }
-
-        res.render('pages/admin/videos', { error: errorMessage, videos });
-    });
-});
-
-router.get('/users', (req, res) => {
-    User.find((error, result) => {
-        let errorMessage = '';
-        let users = [];
-        if (error) {
-            errorMessage = 'Database error';
-        } else if (result) {
-            users = result;
-        }
-
-        res.render('pages/admin/users', { error: errorMessage, users });
-    });;
-});
+//GET request to logout
+router.get('/logout', adminController.logout);
 
 module.exports = router;
