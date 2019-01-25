@@ -9,7 +9,7 @@ A web that allows user upload and manage Youtube Video.
 
 3. This project uses remote image host to save uploaded images. If you want to save images at localhost, change ```SAVE_IMAGE_IN_REMOTE_HOST``` field in ```config.js``` file in root directory to ```false```.
 
-**Note:** This project will response slowly for some requests because this project uses remote server.
+**Note:** This project will response slowly for some requests because this project uses remote database.
 
 ## Run instruction
 
