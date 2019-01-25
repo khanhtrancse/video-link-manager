@@ -25,6 +25,10 @@ controller.login = async (req, res) => {
         return;
     }
 
+    // const admin = new Admin(user);
+    // admin.setPassword(user.password);
+    // await Admin.create(admin);
+
     Admin.findOne({ username: user.username }, (error, result) => {
         if (error) {
             res.render('pages/admin/login', { data: user, error: 'Something wrent wrong.' });
@@ -42,6 +46,18 @@ controller.login = async (req, res) => {
 
 //Display video page
 controller.getVideoPage = async (req, res) => {
+    try {
+        const result = await Video.find(null, null, { sort: { timestamp: -1 } });
+        let videos = result ? result : [];
+        videos = videos.map(item => {
+            item.thumbnail = Utils.getThumbnailImageOfVideo(item.link);
+            item.time = Utils.getTimeStringOf(item.timestamp);
+            return item;
+        });
+        res.render('pages/admin/videos', { videos });
+    } catch (error) {
+        next(error);
+    }
     Video.find((error, result) => {
         let errorMessage = '';
         let videos = [];
@@ -51,7 +67,6 @@ controller.getVideoPage = async (req, res) => {
             videos = result;
         }
 
-        res.render('pages/admin/videos', { error: errorMessage, videos });
     });
 };
 
@@ -78,6 +93,24 @@ controller.logout = (req, res) => {
         })
     } else {
         res.redirect('/admin');
+    }
+}
+
+//Change video status
+controller.changeVideoStatus = async (req, res, next) => {
+    const id = req.query.id;
+    const status = req.query.status;
+    const nextUrl = req.query.nextUrl;
+    try {
+        if (!id || !status) {
+            res.redirect(req.originalUrl)
+            return;
+        }
+
+        await Video.updateOne({ _id: id }, { status });
+        res.redirect(nextUrl);
+    } catch (error) {
+        next(error);
     }
 }
 

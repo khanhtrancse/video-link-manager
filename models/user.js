@@ -8,7 +8,10 @@ const user = {
     email: 'string',
     password: 'string',
     tp_id: 'string',
-    images: ['string']
+    passport_front: 'string',
+    passport_real: 'string',
+    avatar: 'string',
+    updated_info: Boolean,
 }
 
 const UserSchema = new Schema(user);

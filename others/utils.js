@@ -1,7 +1,11 @@
 
 function getThumbnailImageOfVideo(link) {
     // console.log('Link',link);
-    const param = link.match(/v=[^&]*/g)[0];
+    const params = link.match(/v=[^&]*/g);
+    if(!params){
+      return '';
+    }
+    const param = params[0];
     // console.log('param',param);
     const id = (param && param.length > 2) ? param.substring(2) : '';
     console.log('video id', id);

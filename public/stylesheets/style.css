@@ -70,3 +70,15 @@ body{
 .video-item-approved{
   background-color: rgb(112, 168, 115);
 }
+
+.avatar-large{
+  width: 10em;
+  max-height: 10em;
+  border-radius: 50%;
+}
+
+.passport-image{
+  width: 15em;
+  min-height: 10em;
+  max-height: 20em;
+}

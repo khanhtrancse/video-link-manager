@@ -14,12 +14,14 @@ router.get('/login', authentication.requiresNotAdmin, adminController.getLoginPa
 router.post('/login', authentication.requiresNotAdmin, adminController.login);
 
 //GET videos page
-router.get('/videos', authentication.requiresAdmin, adminController.getVideoPage);
+router.get('/videos', adminController.getVideoPage);
 
 //GET user page
 router.get('/users', authentication.requiresAdmin, adminController.getUserPage);
 
 //GET request to logout
 router.get('/logout', adminController.logout);
+
+router.get('/change-video-status',adminController.changeVideoStatus);
 
 module.exports = router;

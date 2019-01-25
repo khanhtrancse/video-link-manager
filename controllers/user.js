@@ -5,6 +5,7 @@ const formidable = require('formidable');
 const Video = require('../models/video');
 const User = require('../models/user');
 const Utils = require('../others/utils');
+const Config = require('../config');
 
 const controller = {};
 
@@ -43,7 +44,8 @@ controller.login = async (req, res, next) => {
         }
 
         req.session.userId = result._id;
-        req.session.hasInfo = result.images && result.images.length > 0
+        req.session.userName = result.name;
+        req.session.hasInfo = result.updated_info;
         res.redirect('/');
     } catch (error) {
         next(error);
@@ -83,6 +85,10 @@ controller.createNewUser = async (req, res, next) => {
             return;
         }
 
+        newUser.avatar = Config.DEFAULT_AVATAR;
+        newUser.passport_front = Config.DEFAULT_PASSPORT;
+        newUser.passport_real = Config.DEFAULT_PASSPORT;
+
         const user = new User(newUser);
         user.setPassword(newUser.password);
         await user.save();
@@ -111,10 +117,14 @@ controller.loginWithFacebook = async (req, res, next) => {
 
         if (existUser) {
             req.session.userId = existUser._id;
-            req.session.hasInfo = existUser.images && existUser.images.length > 0
+            req.session.userName = existUser.name;
+            req.session.hasInfo = existUser.updated_info;
             res.redirect('/');
         } else {
             //First login
+            data.avatar = Config.DEFAULT_AVATAR;
+            data.passport_front = Config.DEFAULT_PASSPORT;
+            data.passport_real = Config.DEFAULT_PASSPORT;
             const newUser = new User(data);
             await newUser.save();
             req.session.userId = newUser._id;
@@ -145,12 +155,12 @@ controller.logout = (req, res, next) => {
 //Display update info page
 controller.getUpdateInfoPage = async (req, res, next) => {
     const id = req.session.userId;
-
+    // const id = '5c4ad9c77929a1108af00cd1';
     //Navigation hidden when user have not update images
     const showNav = req.session.hasInfo;
 
     try {
-        const result = User.findOne({ _id: id });
+        const result = await User.findOne({ _id: id });
         res.render('pages/update-user-info', { user: result, showNav });
     } catch (error) {
         next(error);
@@ -158,50 +168,38 @@ controller.getUpdateInfoPage = async (req, res, next) => {
 }
 
 //Update avatar and passport
-controller.updateUserInfo = async (req, res) => {
+controller.updateUserInfo = async (req, res, next) => {
     // const userId = '5c49b747fb70b007ffda9001';
     const userId = req.session.userId;
 
+    const updateFields = {};
     var form = new formidable.IncomingForm();
-    form.multiples = true;
     //Image folder
     form.uploadDir = "public/upload/";
-    //Start upload
     form.parse(req, function (err, fields, files) {
+        if (err) {
+            next(err);
+            return;
+        }
         try {
-            const userImages = [];
-            if (Array.isArray(files.images)) {
-                for (let i = 0; i < files.images.length; i++) {
-                    const file = files.images[i];
-                    //path tmp in server
-                    var path = file.path;
-                    let fileName = userId + '-' +
-                        new Date().getTime() + '-' + i;
-                    //set new path to file
-                    var newpath = form.uploadDir + fileName;
-                    userImages.push(newpath);
-                    fs.rename(path, newpath, function (err) {
-                        if (err) throw err;
-                    });
-                }
-            } else {
-                const file = files.images;
+            const imageNames = ['avatar', 'passport_real', 'passport_front'];
+            imageNames.forEach(item => {
                 //path tmp in server
+                const file = files[item];
                 var path = file.path;
-                let fileName = userId + '-' +
-                    new Date().getTime() + '-' + 0;
+                let fileName = userId + '-' + item;
                 //set new path to file
                 var newpath = form.uploadDir + fileName;
-                userImages.push(newpath);
+                updateFields[item] = '/upload/' + fileName;
                 fs.rename(path, newpath, function (err) {
                     if (err) throw err;
                 });
-            }
+            })
 
-            User.updateOne({ _id: userId }, { images: userImages }, (err) => {
+            updateFields.updated_info = true;
+            User.updateOne({ _id: userId }, updateFields, (err) => {
                 if (err) {
-                    console.log('UPdate image error', err);
-                    res.redirect('error');
+                    next(err);
                     return;
                 }
 
@@ -241,16 +239,16 @@ controller.addVideo = async (req, res) => {
         return;
     }
     data.user_id = userId;
+    data.user_name = req.session.userName;
     data.status = 'submitted';
     data.timestamp = new Date().getTime();
 
     Video.create(data, (err) => {
         if (err) {
-            console.log('Create video error', err);
-            res.render('pages/add-video', { error: 'Something went wrong' });
+            next(err);
             return;
         }
-        res.redirect('/');
+        res.redirect('/my-videos');
     });
 }
 
@@ -258,16 +256,33 @@ controller.addVideo = async (req, res) => {
 controller.getHomePage = async function (req, res, next) {
     const userId = req.session.userId;
     try {
-        const result = await Video.find({ user_id: userId });
-        const videos = result.map(item => {
+        const result = await Video.find({ status: 'approved' },null,{sort: {timestamp: -1}});
+        const videos = result?result.map(item => {
             item.thumbnail = Utils.getThumbnailImageOfVideo(item.link);
             item.time = Utils.getTimeStringOf(item.timestamp);
             return item;
-        });
-        res.render('pages/home', { videos });
+        }):[];
+        res.render('pages/home', { videos, showAddVideoButton: false });
     } catch (error) {
         next(error);
     }
 }
+
+//Display my video page
+controller.getMyVideoPage = async function (req, res, next) {
+    const userId = req.session.userId;
+    try {
+        const result = await Video.find({ user_id: userId },null,{sort: {timestamp: -1}});
+        const videos = result?result.map(item => {
+            item.thumbnail = Utils.getThumbnailImageOfVideo(item.link);
+            item.time = Utils.getTimeStringOf(item.timestamp);
+            return item;
+        }):[];
+        res.render('pages/home', { videos , showAddVideoButton: true });
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 module.exports = controller;

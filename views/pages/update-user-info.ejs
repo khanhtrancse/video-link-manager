@@ -10,7 +10,7 @@
 
 <body>
   <%if(showNav){%>
-    <% include ../partials/user-nav.ejs %>
+  <% include ../partials/user-nav.ejs %>
   <%}%>
 
   <div class="container container-background">
@@ -19,6 +19,21 @@
         <h2 class="text-center">Update your information</h2>
       </div>
       <hr>
+
+      <!--Avatar-->
+      <div class="d-flex justify-content-center">
+        <img id="avatar" src="<%=user.avatar%>" class="avatar-large" />
+      </div>
+      <div class="d-flex justify-content-center row">
+        <div class="form-group">
+          <input name="avatar" type="file" id="inputAvatar" accept="image/gif, image/jpeg, image/png" onchange="showImage(this.files,'avatar','<%=user.avatar%>');"
+            title="Edit avatar" />
+        </div>
+      </div>
+      <div class="d-flex justify-content-center mb-2">
+          <small class="text-center text-danger" id="avatar-error"></small>
+      </div>
+
       <!--Username-->
       <div class="row mb-2">
         <div class="col-md-3 field-label-responsive my-auto">
@@ -48,29 +63,34 @@
       </div>
 
       <!--Image-->
-      <div class="row mb-2">
-        <div class="col-md-3 field-label-responsive my-auto">
-          <div class="input-group-addon float-md-right"><i class="fas fa-image"></i> Images </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-group mb-0">
-            <input name="images" type="file" id="images" accept="image/gif, image/jpeg, image/png" multiple onchange="selectedFiles(this.files);" />
+      <div class="row mb-2 justify-content-center">
+        <div class="col-12 col-md-4 card">
+          <div class="text-center"><b>Passport 1 (Front)</b></div>
+          <div class="d-flex justify-content-center">
+            <img id="image-passport-front" class="passport-image mb-2" src="<%=user.passport_front%>" />
+          </div>
+          <div class="d-flex justify-content-center">
+            <div class="form-group  mb-0">
+              <input name="passport_front" type="file" id="inputPassportFront" accept="image/gif, image/jpeg, image/png"
+                onchange="showImage(this.files,'image-passport-front','<%=user.passport_front%>');" />
+            </div>
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-12 col-md-4 card">
+          <div class="text-center"><b>Passport 2 (Real)</b></div>
+          <div class="d-flex justify-content-center">
+            <img id="image-passport-real" class="passport-image mb-2" src="<%=user.passport_real%>" />
+          </div>
+          <div class="d-flex justify-content-center">
+            <div class="form-group  mb-0">
+              <input name="passport_real" type="file" id="inputPassportReal" accept="image/gif, image/jpeg, image/png"
+                onchange="showImage(this.files,'image-passport-real','<%=user.passport_real%>');" />
+            </div>
+          </div>
         </div>
       </div>
-
-      <div class="row mb-2 px-0 mx-0 justify-content-center">
-        <div id="image-list" class="col-12 row mx-0 justify-content-center">
-        </div>
-        <small id="images-error" class="text-center text-danger"></small>
-      </div>
-
-      <div class="row mb-2 px-0 mx-0 justify-content-center">
-        <div id="image-list" class="col-12 row mx-0 justify-content-center">
-        </div>
-        <div id="remove-image-hint" class="text-center text-secondary"></div>
+      <div class="d-flex justify-content-center">
+          <small class="text-danger" id="passport-error"></small>
       </div>
 
       <div class="row justify-content-center mb-5">
@@ -81,102 +101,6 @@
     </form>
   </div>
 </body>
-
-<script>
-
-  var currentFiles = [];
-  var isRender = false;
-  
-  /**
-   * User selected images
-   */
-  function selectedFiles(files) {
-    for (let i = 0; i < files.length; i++) {
-      currentFiles.push(files[i]);
-    }
-    previewImage(currentFiles);
-  }
-
-  /**
-   * Render preview list
-   */
-  function previewImage(files) {
-    $("#image-list").empty();
-    $('#images-error').empty();
-    console.log("Selected images", files);
-    if (!files || files.length <= 0) {
-      $('#remove-image-hint').empty();
-      return;
-    }
-    $('#remove-image-hint').html('- Click image to remove it');
-    isRender = true;
-    let i = 0;
-    const callback = () => {
-      i++;
-      if (i < files.length) {
-        showImage(files[i], callback);
-      } else {
-        isRender = false;
-      }
-    }
-    showImage(files[i], callback);
-  }
-
-  /**
-   * Show a image
-   */
-  function showImage(file, callback) {
-    const img = document.createElement("img");
-    img.classList.add('img-fluid');
-    img.classList.add('img-thumbnail');
-    const a = document.createElement("a");
-    a.classList.add("d-block", "h-100", "person-image-thumbnail", "px-1", "py-1", "mx-1");
-    a.appendChild(img);
-    var div = document.createElement("div");
-    div.classList.add("col-lg-3", "col-md-4", "col-xs-6", "my-1");
-    div.appendChild(a);
-    div.onclick = () => {
-      removeImage(file.name);
-    }
-
-    var reader = new FileReader();
-    reader.onloadend = function () {
-      img.src = reader.result;
-      if (callback) {
-        callback();
-      }
-    }
-    reader.readAsDataURL(file);
-    $("#image-list").append(div);
-  }
-
-  function removeImage(name) {
-    console.log('Remove image', name, isRender);
-    if (isRender) {
-      return;
-    }
-
-    for (let i = 0; i < currentFiles.length; i++) {
-      if (currentFiles[i].name == name) {
-        console.log(typeof (currentFiles));
-        currentFiles.splice(i, 1);
-        break;
-      }
-    }
-
-    previewImage(currentFiles);
-  }
-
-  function validateForm() {
-    const valid = currentFiles && currentFiles.length > 0;
-    let error = '';
-    if(!valid){
-      error = 'You must select images.'
-    }
-    $('#images-error').html(error);
-    return valid;
-  }
-
-</script>
+<script type="text/javascript" src="/javascripts/update-info.js"></script>
 
 </html>

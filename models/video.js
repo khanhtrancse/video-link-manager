@@ -9,7 +9,8 @@ const video = {
     description: 'string',
     link: 'string',
     status: 'string',
-    timestamp: Number
+    timestamp: Number,
+    user_name: 'string'
 }
 
 const VideoSchema = new Schema(video);

@@ -14,7 +14,8 @@
   <div class="container">
     <div class="row justify-content-center align-item-center card-container">
 
-      <%if(videos.length ==0){%>
+      <%if(videos.length ==0){
+        if(showAddVideoButton){%>
       <!--No video-->
       <a href="/add-video" class="card mx-5 my-3 home-item bg-info text-white">
         <div class="row justify-content-center">
@@ -25,6 +26,9 @@
           <p class="card-text">Add new video</p>
         </div>
       </a>
+      <%} else{%> 
+      <h3 class="text-info my-5">No Video</h3>        
+      <%}%>
       <%} else {
         for(let i = 0;i< videos.length;i++){
           let statusText;
@@ -36,7 +40,6 @@
           } else if(status == 'approved'){
             statusClass = "text-success";
             statusText='Approved';
-            itemClass = "video-item-approved";
           } else {
             statusClass = "text-danger";
             statusText='Rejected';
@@ -59,6 +62,9 @@
               </div>
 
             </div>
+          </div>
+          <div><b>Upload by:</b>
+            <%=videos[i].user_name%>
           </div>
           <div><b>Type:</b>
             <%=videos[i].type%>
